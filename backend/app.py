@@ -1,18 +1,18 @@
-from flask import Flask, jsonify
 from flask_cors import CORS
 from models import db, UserTableA, UserTableB
 from data_fetcher import fetch_and_update
 from config import Config
+from flask import Flask, jsonify
 
 app = Flask(__name__)
 app.config.from_object(Config)
 db.init_app(app)
 CORS(app)
 
-@app.before_first_request
-def initialize_database():
+# ✅ Initialize DB + Sample Data at App Startup
+with app.app_context():
     db.create_all()
-    fetch_and_update()  # preload some data
+    fetch_and_update()
 
 @app.route("/")
 def home():
