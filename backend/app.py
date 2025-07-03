@@ -1,5 +1,5 @@
 from flask_cors import CORS
-from models import db, UserTableA, UserTableB
+from models import db, UserTableA, UserTableB, SegmentHistory
 from data_fetcher import fetch_and_update
 from config import Config
 from flask import Flask, jsonify
@@ -33,7 +33,32 @@ def segment_overlap():
 @app.route("/refresh", methods=["POST"])
 def refresh_data():
     fetch_and_update()
+
+    a_ids = {u.hashed_id for u in UserTableA.query.all()}
+    b_ids = {u.hashed_id for u in UserTableB.query.all()}
+    overlap = a_ids & b_ids
+
+    history_entry = SegmentHistory(
+        total_a=len(a_ids),
+        total_b=len(b_ids),
+        overlap=len(overlap)
+    )
+    db.session.add(history_entry)
+    db.session.commit()
+
     return jsonify({"status": "data refreshed"})
+
+@app.route("/history", methods=["GET"])
+def get_history():
+    history = SegmentHistory.query.order_by(SegmentHistory.timestamp).all()
+    return jsonify([
+        {
+            "timestamp": h.timestamp.strftime("%Y-%m-%d %H:%M:%S"),
+            "total_a": h.total_a,
+            "total_b": h.total_b,
+            "overlap": h.overlap
+        } for h in history
+    ])
 
 if __name__ == "__main__":
     app.run(debug=True)
