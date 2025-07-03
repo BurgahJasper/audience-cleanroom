@@ -3,7 +3,7 @@
 This project simulates how advertisers and publishers can securely segment audiences using hashed identifiers, without ever sharing personally identifiable information (PII). It mimics how modern clean rooms (like Google's Ads Data Hub or Meta’s Advanced Matching) enable privacy-safe data collaboration.
 
 > 🔐 Built by [Jasper Maximo Garcia](https://www.linkedin.com/in/burgahjasper/)  
-> 🌐 [Live Demo](https://your-vercel-app.vercel.app) • [API Docs](https://audience-cleanroom.onrender.com/segment)
+> 🌐 [Live Demo](https://audience-cleanroom.vercel.app/) • [API Docs](https://audience-cleanroom.onrender.com/segment)
 
 ---
 
