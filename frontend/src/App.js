@@ -109,6 +109,10 @@ function App() {
           🧩 Privacy-Aware Audience Targeting
         </h1>
 
+        <p style={{ textAlign: "center", fontSize: "0.95rem", color: "#f87171", marginTop: "-1rem", marginBottom: "1.5rem" }}>
+          ⏳ Please allow up to 50 seconds for the backend to wake up if inactive.
+        </p>
+
         <p style={{ fontSize: "1.1rem", color: "#cbd5e1", textAlign: "center" }}>
           This simulation demonstrates how advertisers and publishers can compare user lists using
           <strong> hashed identifiers</strong> without sharing private data. It's a simplified version of what clean rooms enable: privacy-safe audience matching.
