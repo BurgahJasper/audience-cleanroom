@@ -1,11 +1,22 @@
+// ...imports unchanged
 import React, { useEffect, useState } from "react";
-import { Bar } from "react-chartjs-2";
-import { Chart as ChartJS, BarElement, CategoryScale, LinearScale } from "chart.js";
+import {
+  Chart as ChartJS,
+  BarElement,
+  LineElement,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  Tooltip,
+  Legend,
+} from "chart.js";
+import { Bar, Line } from "react-chartjs-2";
 
-ChartJS.register(BarElement, CategoryScale, LinearScale);
+ChartJS.register(BarElement, LineElement, CategoryScale, LinearScale, PointElement, Tooltip, Legend);
 
 function App() {
   const [data, setData] = useState(null);
+  const [history, setHistory] = useState([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [showInfo, setShowInfo] = useState(false);
@@ -19,9 +30,15 @@ function App() {
 
   const fetchData = async () => {
     setLoading(true);
-    const res = await fetch(`${BACKEND_URL}/segment`);
-    const json = await res.json();
-    setData(json);
+
+    const segmentRes = await fetch(`${BACKEND_URL}/segment`);
+    const historyRes = await fetch(`${BACKEND_URL}/history`);
+
+    const segmentJson = await segmentRes.json();
+    const historyJson = await historyRes.json();
+
+    setData(segmentJson);
+    setHistory(historyJson);
     setLoading(false);
   };
 
@@ -39,17 +56,36 @@ function App() {
           {
             label: "User Count",
             data: [data.total_a, data.total_b, data.overlap_count],
-            backgroundColor: ["#60a5fa", "#34d399", "#f59e0b"],
+            backgroundColor: ["#3b82f6", "#10b981", "#f59e0b"],
           },
         ],
       }
     : null;
+  const handleExportCSV = () => {
+    if (!history || history.length === 0) return;
+
+    const headers = ["timestamp", "total_a", "total_b", "overlap"];
+    const rows = history.map(h => [h.timestamp, h.total_a, h.total_b, h.overlap]);
+
+    const csvContent = [
+      headers.join(","),
+      ...rows.map(r => r.join(","))
+    ].join("\n");
+
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.setAttribute("download", "segment_history.csv");
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
 
   return (
     <div
       style={{
         minHeight: "100vh",
-        background: "linear-gradient(to right, #f0f4ff, #e5f4ef)",
+        background: "linear-gradient(to right, #0f172a, #1e293b)",
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
@@ -58,32 +94,35 @@ function App() {
     >
       <div
         style={{
-          background: "#fff",
+          background: "#1e293b",
           padding: "3rem",
           borderRadius: "12px",
-          boxShadow: "0 6px 24px rgba(0,0,0,0.1)",
+          boxShadow: "0 6px 24px rgba(0,0,0,0.6)",
           maxWidth: "750px",
           width: "100%",
           fontFamily: "Arial, sans-serif",
           lineHeight: "1.6",
+          color: "#e2e8f0",
         }}
       >
-        <h1 style={{ textAlign: "center", fontSize: "2.5rem", marginBottom: "1rem" }}>
+        <h1 style={{ textAlign: "center", fontSize: "2.5rem", marginBottom: "1rem", color: "#93c5fd" }}>
           🧩 Privacy-Aware Audience Targeting
         </h1>
 
-        <p style={{ fontSize: "1.1rem", color: "#444", textAlign: "center" }}>
+        <p style={{ fontSize: "1.1rem", color: "#cbd5e1", textAlign: "center" }}>
           This simulation demonstrates how advertisers and publishers can compare user lists using
-          <strong> hashed identifiers</strong> without sharing private data — a privacy-safe audience match.
+          <strong> hashed identifiers</strong> without sharing private data. It's a simplified version of what clean rooms enable: privacy-safe audience matching.
         </p>
 
-        <hr style={{ margin: "2rem 0" }} />
+        <hr style={{ margin: "2rem 0", borderColor: "#475569" }} />
 
         {loading ? (
-          <p>🔄 Loading segment data...</p>
+          <p style={{ textAlign: "center" }}>🔄 Loading segment data...</p>
         ) : (
           <>
-            <h2 style={{ fontSize: "1.5rem" }}>📊 Current Segment Overlap</h2>
+            <h2 style={{ fontSize: "1.5rem", marginBottom: "1rem", color: "#fbbf24" }}>
+              📊 Current Segment Overlap
+            </h2>
             <ul style={{ fontSize: "1.1rem", listStyle: "none", paddingLeft: 0 }}>
               <li><strong>Overlap Count:</strong> {data.overlap_count}</li>
               <li><strong>Total in Dataset A:</strong> {data.total_a}</li>
@@ -91,19 +130,24 @@ function App() {
               <li><strong>Percent Overlap:</strong> {data.percent_overlap}%</li>
             </ul>
 
-            <div style={{ marginTop: "1rem", display: "flex", justifyContent: "center", gap: "1rem", flexWrap: "wrap" }}>
+            <div style={{
+              marginTop: "1rem",
+              display: "flex",
+              justifyContent: "center",
+              flexWrap: "wrap",
+              gap: "1rem"
+            }}>
               <button
                 onClick={handleRefresh}
                 disabled={refreshing}
                 style={{
                   padding: "0.6rem 1.2rem",
                   fontSize: "1rem",
-                  backgroundColor: "#0070f3",
+                  backgroundColor: "#2563eb",
                   color: "white",
                   border: "none",
                   borderRadius: "6px",
                   cursor: "pointer",
-                  marginRight: "1rem",
                 }}
               >
                 {refreshing ? "Refreshing..." : "🔁 Refresh Data"}
@@ -119,7 +163,6 @@ function App() {
                   border: "none",
                   borderRadius: "6px",
                   cursor: "pointer",
-                  marginRight: "1rem",
                 }}
               >
                 {showChart ? "Hide Chart" : "📈 Show Chart"}
@@ -139,47 +182,113 @@ function App() {
               >
                 {showInfo ? "Hide Explanation" : "❓ What does this mean?"}
               </button>
+              <button
+                onClick={handleExportCSV}
+                style={{
+                  padding: "0.6rem 1.2rem",
+                  fontSize: "1rem",
+                  backgroundColor: "#8b5cf6",
+                  color: "white",
+                  border: "none",
+                  borderRadius: "6px",
+                  cursor: "pointer",
+                }}
+              >
+                📤 Export as CSV
+              </button>
+
             </div>
 
-            {showChart && chartData && (
+            {showChart && (
               <div style={{ marginTop: "2rem" }}>
                 <Bar data={chartData} />
               </div>
             )}
 
+            {showChart && history.length > 0 && (
+              <div style={{ marginTop: "2rem" }}>
+                <h3 style={{ textAlign: "center", color: "#93c5fd" }}>📈 Overlap % Trend Over Time</h3>
+                <Line
+                  data={{
+                    labels: history.map((h) => h.timestamp.split(" ")[1]),
+                    datasets: [
+                      {
+                        label: "Overlap %",
+                        data: history.map((h) =>
+                          Math.round((h.overlap / (h.total_a + h.total_b - h.overlap)) * 100)
+                        ),
+                        borderColor: "#60a5fa",
+                        backgroundColor: "#60a5fa",
+                        fill: false,
+                        tension: 0.4,
+                      },
+                    ],
+                  }}
+                  options={{
+                    responsive: true,
+                    plugins: {
+                      legend: { display: true, labels: { color: "#d1d5db" } },
+                    },
+                    scales: {
+                      y: {
+                        beginAtZero: true,
+                        max: 100,
+                        ticks: { color: "#d1d5db" },
+                        title: { display: true, text: "Overlap %", color: "#d1d5db" },
+                      },
+                      x: {
+                        ticks: { color: "#d1d5db" },
+                        title: { display: true, text: "Time", color: "#d1d5db" },
+                      },
+                    },
+                  }}
+                />
+              </div>
+            )}
+
             {showInfo && (
-              <div style={{ fontSize: "0.95rem", color: "#333", marginTop: "1.5rem" }}>
+              <div style={{ fontSize: "0.95rem", color: "#cbd5e1", marginTop: "1.5rem" }}>
                 <p>
-                  <strong>Dataset A/B:</strong> Simulated independent user lists (e.g., advertiser & publisher).
+                  <strong>Dataset A/B:</strong> These are simulated datasets from two separate parties,
+                  such as an advertiser and a publisher.
                 </p>
                 <p>
-                  <strong>Overlap Count:</strong> Number of users with matching hashed emails — simulating
-                  shared users in a privacy-safe way.
+                  <strong>Overlap Count:</strong> This shows how many users appear in both datasets,
+                  based on matching hashed email identifiers.
                 </p>
                 <p>
-                  <strong>Percent Overlap:</strong> How many users exist in both datasets as a percentage of
-                  the total.
+                  <strong>Percent Overlap:</strong> The proportion of shared users across both datasets.
+                  This is calculated as overlap divided by the total number of unique users in both sets.
                 </p>
                 <p>
-                  This is similar to how clean rooms like Google's Ads Data Hub work — enabling audience targeting
-                  without exposing private data between parties.
+                  <strong>Why it matters:</strong> In real-world marketing, overlap metrics help determine
+                  if an audience is viable for targeting or if two parties can run joint campaigns effectively.
+                  Clean rooms enable this analysis without revealing raw user data, preserving privacy while
+                  still enabling insight and action.
+                </p>
+                <p>
+                  You can also <strong>export the overlap history to a CSV file</strong> for deeper analysis using Excel, Google Sheets, or Python.
                 </p>
               </div>
             )}
           </>
         )}
 
-        <p style={{ textAlign: "center", marginTop: "2rem", fontSize: "0.95rem" }}>
+        <p style={{ textAlign: "center", marginTop: "2rem", fontSize: "0.95rem", color: "#94a3b8" }}>
           🛠️ View the API directly:{" "}
           <a
             href="https://audience-cleanroom.onrender.com/segment"
             target="_blank"
             rel="noopener noreferrer"
-            style={{ color: "#0070f3", textDecoration: "none", fontWeight: "bold" }}
+            style={{ color: "#93c5fd", textDecoration: "none", fontWeight: "bold" }}
           >
             /segment endpoint
           </a>
         </p>
+        <p style={{ textAlign: "center", fontSize: "0.9rem", color: "#64748b", marginTop: "2rem" }}>
+          Built by <strong>Jasper Maximo Garcia</strong> · <a href="https://github.com/BurgahJasper/audience-cleanroom" target="_blank" rel="noopener noreferrer" style={{ color: "#93c5fd", textDecoration: "none" }}>View on GitHub</a>
+        </p>
+
       </div>
     </div>
   );

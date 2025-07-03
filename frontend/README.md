@@ -1,70 +1,59 @@
-# Getting Started with Create React App
+# 🧩 Privacy-Aware Audience Targeting System (Clean Room Simulation)
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+This project simulates how advertisers and publishers can securely segment audiences using hashed identifiers, without ever sharing personally identifiable information (PII). It mimics how modern clean rooms (like Google's Ads Data Hub or Meta’s Advanced Matching) enable privacy-safe data collaboration.
 
-## Available Scripts
+> 🔐 Built by [Jasper Maximo Garcia](https://www.linkedin.com/in/burgahjasper/)  
+> 🌐 [Live Demo](https://your-vercel-app.vercel.app) • [API Docs](https://audience-cleanroom.onrender.com/segment)
 
-In the project directory, you can run:
+---
 
-### `npm start`
+## 🚀 Features
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+- 🔗 **Privacy-safe joins** using SHA256 hashed email identifiers
+- 📊 **Audience overlap metrics** between two synthetic datasets
+- 🔁 **Dynamic refresh simulation** to mimic live data updates
+- 📈 **Trend tracking** with historical logging and interactive line chart
+- 🧠 **Explanatory UI + Exportable CSV** for educational clarity and analysis
+- 🌙 **Dark mode styling** for sleek and recruiter-friendly presentation
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+---
 
-### `npm test`
+## 🧪 Technologies Used
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+| Layer      | Stack                                    |
+|------------|------------------------------------------|
+| Frontend   | React, Chart.js, CSS                     |
+| Backend    | Python, Flask, Flask-CORS, SQLAlchemy    |
+| Database   | PostgreSQL (hosted on Render)            |
+| Hosting    | Frontend on Vercel, Backend on Render    |
 
-### `npm run build`
+---
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+## 🛠 How It Works
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+- **User data is simulated** via randomized emails and interests.
+- **Emails are hashed** with SHA256 before storage to preserve privacy.
+- **A clean-room-style join** is performed between datasets A and B using the hashed IDs.
+- **Historical refreshes** are stored and visualized over time.
+- When **Privacy Mode is enabled**, overlap data is suppressed to comply with GDPR/CCPA concepts.
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+---
 
-### `npm run eject`
+## 📤 Exportable Data
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+Click "Export as CSV" in the app to download historical overlap logs. Perfect for deeper analysis in Excel or Python.
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+---
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+## 🧠 Why This Matters
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+Understanding privacy-preserving audience segmentation is crucial in today's data-driven world. This project demonstrates how clean rooms work in principle, and how ethical data use can still enable effective marketing.
 
-## Learn More
+---
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+## 🙋‍♂️ Built By
 
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+**Jasper Maximo Garcia**  
+💼 [Portfolio](https://burgahjasper.github.io/terminalPortfolio/)  
+🔗 [LinkedIn](https://www.linkedin.com/in/burgahjasper/)  
+📧 jaspermaximo@gmail.com  
